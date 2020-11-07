@@ -27,7 +27,9 @@ class DashboardPage extends StatelessWidget {
               : Text('Dashboard'),
         ),
         actions: [
-          IconButton(icon: Icon(Icons.search), onPressed: ctrl.setSearch)
+          Obx(() => ctrl.isSearch.value
+              ? IconButton(icon: Icon(Icons.clear), onPressed: ctrl.clearSearch)
+              : IconButton(icon: Icon(Icons.search), onPressed: ctrl.setSearch))
         ],
       ),
       body: Obx(
@@ -46,69 +48,73 @@ class DashboardPage extends StatelessWidget {
                       color: Colors.blue,
                     ),
                   )
-                : ctrl.feedPaginate.feeds.length == 0
-                    ? Center(
-                        child: Text('Empty.'),
-                      )
-                    : NotificationListener<ScrollNotification>(
-                        onNotification: (ScrollNotification sn) {
-                          if (sn.metrics.pixels >=
-                                  (sn.metrics.maxScrollExtent - 200) &&
-                              ctrl.feedPaginate.total >
-                                  ctrl.feedPaginate.feeds.length) {
-                            ctrl.getFeedList(initial: false);
-                          }
-                          return true;
-                        },
-                        child: RefreshIndicator(
-                          onRefresh: () => ctrl.getFeedList(initial: true),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Card(
-                                  child: Container(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: Column(
-                                      children: [
-                                        Text('Number of Subscribed Feed'),
-                                        Text(
-                                          "${ctrl.getSubscribedFeedAmount()}",
-                                          style: TextStyle(fontSize: 30.0),
-                                        )
-                                      ],
-                                    ),
-                                  ),
+                : NotificationListener<ScrollNotification>(
+                    onNotification: (ScrollNotification sn) {
+                      if (sn.metrics.pixels >=
+                              (sn.metrics.maxScrollExtent - 200) &&
+                          ctrl.feedPaginate.total >
+                              ctrl.feedPaginate.feeds.length) {
+                        ctrl.getFeedList(initial: false);
+                      }
+                      return true;
+                    },
+                    child: RefreshIndicator(
+                      onRefresh: () => ctrl.getFeedList(initial: true),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Card(
+                              child: Container(
+                                padding: EdgeInsets.all(8.0),
+                                child: Column(
+                                  children: [
+                                    Text('Number of Subscribed Feed'),
+                                    Text(
+                                      "${ctrl.getSubscribedFeedAmount()}",
+                                      style: TextStyle(fontSize: 30.0),
+                                    )
+                                  ],
                                 ),
-                                Expanded(
-                                  child: ListView.builder(
-                                    itemCount: ctrl.feedPaginate.total >
-                                            ctrl.feedPaginate.feeds.length
-                                        ? ctrl.feedPaginate.feeds.length + 1
-                                        : ctrl.feedPaginate.feeds.length,
-                                    itemBuilder: (context, index) {
-                                      if (ctrl.feedPaginate.total >
-                                              ctrl.feedPaginate.feeds.length &&
-                                          index ==
-                                              ctrl.feedPaginate.feeds.length) {
-                                        return Center(
-                                            child: CircularProgressIndicator());
-                                      }
-                                      return FeedListItem(
-                                        feed: ctrl.feedPaginate.feeds[index],
-                                        onPressed: () => ctrl.toggleSubscribe(
-                                          feed: ctrl.feedPaginate.feeds[index],
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ],
+                              ),
                             ),
-                          ),
+                            Expanded(
+                              child: ctrl.feedPaginate.feeds.length == 0
+                                  ? Center(
+                                      child: Text('Empty.'),
+                                    )
+                                  : ListView.builder(
+                                      itemCount: ctrl.feedPaginate.total >
+                                              ctrl.feedPaginate.feeds.length
+                                          ? ctrl.feedPaginate.feeds.length + 1
+                                          : ctrl.feedPaginate.feeds.length,
+                                      itemBuilder: (context, index) {
+                                        if (ctrl.feedPaginate.total >
+                                                ctrl.feedPaginate.feeds
+                                                    .length &&
+                                            index ==
+                                                ctrl.feedPaginate.feeds
+                                                    .length) {
+                                          return Center(
+                                              child:
+                                                  CircularProgressIndicator());
+                                        }
+                                        return FeedListItem(
+                                          feed: ctrl.feedPaginate.feeds[index],
+                                          onPressed: () => ctrl.toggleSubscribe(
+                                            feed:
+                                                ctrl.feedPaginate.feeds[index],
+                                          ),
+                                        );
+                                      },
+                                    ),
+                            ),
+                          ],
                         ),
                       ),
+                    ),
+                  ),
       ),
     );
   }

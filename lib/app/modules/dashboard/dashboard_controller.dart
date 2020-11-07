@@ -47,6 +47,16 @@ class DashboardCtrl extends GetxController {
     getFeedList(initial: true);
   }
 
+  FeedPaginate syncSubscription(FeedPaginate fp) {
+    _subscriptionList.forEach((e) {
+      int index = fp.feeds.indexWhere((element) => element.id == e.feedId);
+      if (index >= 0) {
+        fp.feeds[index].subscriptionId = e.id;
+      }
+    });
+    return fp;
+  }
+
   getFeedList({@required bool initial, String keyword}) async {
     if (isLoading) {
       return;
@@ -59,7 +69,7 @@ class DashboardCtrl extends GetxController {
       keyword: keyword,
     );
     if (response.status) {
-      FeedPaginate fp = response.data;
+      FeedPaginate fp = syncSubscription(response.data);
       if (feedPaginate == null || initial) {
         feedPaginate = fp;
       } else {
@@ -79,6 +89,7 @@ class DashboardCtrl extends GetxController {
         val.feeds[val.feeds.indexWhere((element) => element.id == feed.id)]
             .subscriptionId = null;
       });
+      _subscriptionList.removeWhere((e) => e.feedId == feed.id);
       ViewUtils.showSnackbar(
           status: false, message: 'Unsubscribed from ${feed.feedName}');
     } else {
@@ -89,6 +100,7 @@ class DashboardCtrl extends GetxController {
           val.feeds[val.feeds.indexWhere((element) => element.id == feed.id)]
               .subscriptionId = (response.data as SubscribeResponse).id;
         });
+        _subscriptionList.add(response.data);
         ViewUtils.showSnackbar(
             status: response.status, message: 'Subscribed to ${feed.feedName}');
       } else {
@@ -101,11 +113,13 @@ class DashboardCtrl extends GetxController {
     isSearch.value = !isSearch.value;
   }
 
+  clearSearch() {
+    isSearch.value = false;
+    getFeedList(initial: true);
+  }
+
   getSubscribedFeedAmount() {
-    return _feedPaginate.value.feeds
-        .where((e) => e.subscriptionId != null)
-        .toList()
-        .length;
+    return _subscriptionList.length;
   }
 
   filterByFeedName({String feedName}) {
@@ -114,5 +128,4 @@ class DashboardCtrl extends GetxController {
       getFeedList(initial: true, keyword: feedName);
     });
   }
-  
 }
