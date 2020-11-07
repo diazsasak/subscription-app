@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:get/get.dart';
 import 'package:meta/meta.dart';
 import 'package:subscription_app/app/data/models/feed.dart';
@@ -15,6 +17,14 @@ class DashboardCtrl extends GetxController {
   DashboardCtrl({@required this.feedRepository})
       : assert(feedRepository != null);
 
+  final isSearch = Rx<bool>(false);
+
+  final _subscriptionList = RxList<SubscribeResponse>([]);
+
+  get subscriptionList => _subscriptionList;
+
+  set subscriptionList(val) => _subscriptionList.value = val;
+
   final _isLoading = Rx<bool>(false);
 
   get isLoading => _isLoading.value;
@@ -29,21 +39,25 @@ class DashboardCtrl extends GetxController {
 
   final _amountPerPage = 10;
 
+  Timer _debounce;
+
   @override
   void onInit() {
     super.onInit();
     getFeedList(initial: true);
   }
 
-  getFeedList({@required initial}) async {
+  getFeedList({@required bool initial, String keyword}) async {
     if (isLoading) {
       return;
     }
     isLoading = true;
     ProviderResponse response = await feedRepository.getFeedList(
-        page: initial
-            ? 1
-            : (_feedPaginate.value.feeds.length / _amountPerPage).floor() + 1);
+      page: initial
+          ? 1
+          : (_feedPaginate.value.feeds.length / _amountPerPage).floor() + 1,
+      keyword: keyword,
+    );
     if (response.status) {
       FeedPaginate fp = response.data;
       if (feedPaginate == null || initial) {
@@ -66,7 +80,7 @@ class DashboardCtrl extends GetxController {
             .subscriptionId = null;
       });
       ViewUtils.showSnackbar(
-          status: true, message: 'Unsubscribed from ${feed.feedName}');
+          status: false, message: 'Unsubscribed from ${feed.feedName}');
     } else {
       ProviderResponse response =
           await feedRepository.subscribeFeed(feedId: feed.id);
@@ -82,4 +96,23 @@ class DashboardCtrl extends GetxController {
       }
     }
   }
+
+  setSearch() {
+    isSearch.value = !isSearch.value;
+  }
+
+  getSubscribedFeedAmount() {
+    return _feedPaginate.value.feeds
+        .where((e) => e.subscriptionId != null)
+        .toList()
+        .length;
+  }
+
+  filterByFeedName({String feedName}) {
+    if (_debounce?.isActive ?? false) _debounce.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      getFeedList(initial: true, keyword: feedName);
+    });
+  }
+  
 }

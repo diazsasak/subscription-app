@@ -6,13 +6,11 @@ class FeedRepository {
 
   FeedRepository({@required this.apiClient}) : assert(apiClient != null);
 
-  getFeedList({@required int page}) {
-    return apiClient.getFeedList(page: page);
+  getFeedList({@required int page, String keyword}) {
+    return apiClient.getFeedList(page: page, keyword: keyword);
   }
 
   subscribeFeed({@required int feedId}) {
     return apiClient.subscribeFeed(feedId: feedId);
   }
-
 }
-

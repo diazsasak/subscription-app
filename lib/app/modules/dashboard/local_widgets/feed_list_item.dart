@@ -18,7 +18,18 @@ class FeedListItem extends StatelessWidget {
             children: [
               FlutterLogo(size: 30),
               SizedBox(width: 10),
-              Expanded(child: Text(feed.feedName)),
+              Expanded(
+                  child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(feed.feedName),
+                  if (feed.subscriptionId != null)
+                    Text(
+                      "Subscription ID: ${feed.subscriptionId}",
+                      style: TextStyle(fontSize: 10.0),
+                    ),
+                ],
+              )),
               InkWell(
                 onTap: onPressed,
                 child: feed.subscriptionId == null

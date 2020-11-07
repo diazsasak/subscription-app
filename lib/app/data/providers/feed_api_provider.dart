@@ -15,11 +15,14 @@ class FeedApiProvider {
 
   final Map<String, String> _headers = {'Content-Type': 'application/json'};
 
-  Future<ProviderResponse> getFeedList({@required int page}) async {
+  Future<ProviderResponse> getFeedList(
+      {@required int page, String keyword}) async {
     try {
-      http.Response r = await httpClient.get(
-          "$baseUrl/feeds?_page=$page&_limit=10&_sort=id",
-          headers: _headers);
+      String url = "$baseUrl/feeds?_page=$page&_limit=10&_sort=id";
+      if (keyword != null) {
+        url += "&feedName_like=$keyword";
+      }
+      http.Response r = await httpClient.get(url, headers: _headers);
       Map<String, dynamic> response = setupResponse(r);
       if (response['status']) {
         return ProviderResponse<FeedPaginate>(
@@ -62,7 +65,7 @@ class FeedApiProvider {
     Map<String, dynamic> responseData = {};
     print(response.request.url);
     print(response.statusCode);
-    print(response.body);
+    // print(response.body);
     if (response.statusCode != 200) {
       responseData['status'] = false;
       if (response.statusCode == 500) {
