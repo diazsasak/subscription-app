@@ -5,8 +5,9 @@ import 'package:subscription_app/app/data/models/feed.dart';
 import 'package:subscription_app/app/data/models/feed_paginate.dart';
 import 'package:subscription_app/app/data/models/provider_response.dart';
 import 'package:subscription_app/app/data/models/subscribe_response.dart';
+import 'package:subscription_app/app/settings/server_address.dart';
 
-const baseUrl = 'http://10.0.2.2:3000/api/v1';
+const baseUrl = "$SERVER_ADDRESS/api/v1";
 
 class FeedApiProvider {
   final http.Client httpClient;
