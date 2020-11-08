@@ -8,6 +8,7 @@ import 'package:subscription_app/app/data/models/feed.dart';
 import 'package:subscription_app/app/data/providers/feed_api_provider.dart';
 import 'package:subscription_app/app/data/repositories/feed_repository.dart';
 import 'package:subscription_app/app/modules/dashboard/dashboard_controller.dart';
+import 'package:subscription_app/app/settings/server_address.dart';
 
 class MockClient extends Mock implements http.Client {}
 
@@ -39,8 +40,8 @@ void main() {
       final mapJson = [
         {'id': 1, 'feedName': 'Feed 1'}
       ];
-      when(client.get(
-              'http://192.168.43.105:3000/api/v1/feeds?_page=1&_limit=10&_sort=id'))
+      when(client
+              .get('$SERVER_ADDRESS/api/v1/feeds?_page=1&_limit=10&_sort=id'))
           .thenAnswer((_) async => http.Response(json.encode(mapJson), 200,
               headers: {'x-total-count': '21'}));
       expect(ctrl.feedPaginate, isNull);
@@ -55,8 +56,8 @@ void main() {
       final feedsResponse = [
         {'id': 1, 'feedName': 'Feed 1'}
       ];
-      when(client.get(
-              'http://192.168.43.105:3000/api/v1/feeds?_page=1&_limit=10&_sort=id'))
+      when(client
+              .get('$SERVER_ADDRESS/api/v1/feeds?_page=1&_limit=10&_sort=id'))
           .thenAnswer((_) async => http.Response(
               json.encode(feedsResponse), 200,
               headers: {'x-total-count': '21'}));
@@ -64,9 +65,8 @@ void main() {
       await Future.delayed(Duration(milliseconds: 500));
       expect(ctrl.numberOfSubscribedFeed, 0);
       final subscribeResponse = {"id": "subsId1", "feedId": 1};
-      when(client.get('http://192.168.43.105:3000/api/v1/feed/1/subscribe'))
-          .thenAnswer(
-              (_) async => http.Response(json.encode(subscribeResponse), 200));
+      when(client.get('$SERVER_ADDRESS/api/v1/feed/1/subscribe')).thenAnswer(
+          (_) async => http.Response(json.encode(subscribeResponse), 200));
       ctrl.toggleSubscribe(feed: ctrl.feedPaginate.feeds[0]);
       await Future.delayed(Duration(milliseconds: 500));
       expect(ctrl.numberOfSubscribedFeed, 1);
@@ -80,17 +80,15 @@ void main() {
     final feedsResponse = [
       {'id': 1, 'feedName': 'Feed 1'}
     ];
-    when(client.get(
-            'http://192.168.43.105:3000/api/v1/feeds?_page=1&_limit=10&_sort=id'))
+    when(client.get('$SERVER_ADDRESS/api/v1/feeds?_page=1&_limit=10&_sort=id'))
         .thenAnswer((_) async => http.Response(json.encode(feedsResponse), 200,
             headers: {'x-total-count': '21'}));
     ctrl.getFeedList(initial: true);
     await Future.delayed(Duration(milliseconds: 500));
     expect(ctrl.numberOfSubscribedFeed, 0);
     final subscribeResponse = {"id": "subsId1", "feedId": 1};
-    when(client.get('http://192.168.43.105:3000/api/v1/feed/1/subscribe'))
-        .thenAnswer(
-            (_) async => http.Response(json.encode(subscribeResponse), 200));
+    when(client.get('$SERVER_ADDRESS/api/v1/feed/1/subscribe')).thenAnswer(
+        (_) async => http.Response(json.encode(subscribeResponse), 200));
     ctrl.toggleSubscribe(feed: ctrl.feedPaginate.feeds[0]);
     await Future.delayed(Duration(milliseconds: 500));
     expect(ctrl.numberOfSubscribedFeed, 1);
@@ -106,17 +104,15 @@ void main() {
       {'id': 2, 'feedName': 'Feed 2'},
       {'id': 11, 'feedName': 'Feed 11'},
     ];
-    when(client.get(
-            'http://192.168.43.105:3000/api/v1/feeds?_page=1&_limit=10&_sort=id'))
+    when(client.get('$SERVER_ADDRESS/api/v1/feeds?_page=1&_limit=10&_sort=id'))
         .thenAnswer((_) async => http.Response(json.encode(feedsResponse), 200,
             headers: {'x-total-count': '21'}));
     ctrl.getFeedList(initial: true);
     await Future.delayed(Duration(milliseconds: 500));
     expect(ctrl.numberOfSubscribedFeed, 0);
     final subscribeResponse = {"id": "subsId1", "feedId": 1};
-    when(client.get('http://192.168.43.105:3000/api/v1/feed/1/subscribe'))
-        .thenAnswer(
-            (_) async => http.Response(json.encode(subscribeResponse), 200));
+    when(client.get('$SERVER_ADDRESS/api/v1/feed/1/subscribe')).thenAnswer(
+        (_) async => http.Response(json.encode(subscribeResponse), 200));
     ctrl.toggleSubscribe(feed: ctrl.feedPaginate.feeds[0]);
     await Future.delayed(Duration(milliseconds: 500));
     expect(ctrl.numberOfSubscribedFeed, 1);
