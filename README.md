@@ -1,6 +1,9 @@
 # subscription_app
 
-Simple flutter app using json-server as mock API
+Simple flutter app that use json-server as mock API and GetX as bloc implementation.
+
+Reference:
+- https://github.com/jonataslaw/getx
 
 ## Getting Started
 
