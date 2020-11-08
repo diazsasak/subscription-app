@@ -11,8 +11,9 @@ class DashboardPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Obx(
-          () => ctrl.isSearch.value
+          () => ctrl.isSearchEnabled
               ? TextField(
+                  key: Key('text_field'),
                   autofocus: true,
                   decoration: InputDecoration(
                     hintText: 'Search by feed name',
@@ -27,9 +28,12 @@ class DashboardPage extends StatelessWidget {
               : Text('Dashboard'),
         ),
         actions: [
-          Obx(() => ctrl.isSearch.value
-              ? IconButton(icon: Icon(Icons.clear), onPressed: ctrl.clearSearch)
-              : IconButton(icon: Icon(Icons.search), onPressed: ctrl.setSearch))
+          IconButton(
+            icon: Obx(() =>
+                ctrl.isSearchEnabled ? Icon(Icons.clear) : Icon(Icons.search)),
+            onPressed: ctrl.setSearch,
+            key: Key('search_button'),
+          )
         ],
       ),
       body: Obx(
@@ -72,7 +76,7 @@ class DashboardPage extends StatelessWidget {
                                   children: [
                                     Text('Number of Subscribed Feed'),
                                     Text(
-                                      "${ctrl.getSubscribedFeedAmount()}",
+                                      "${ctrl.numberOfSubscribedFeed}",
                                       style: TextStyle(fontSize: 30.0),
                                     )
                                   ],

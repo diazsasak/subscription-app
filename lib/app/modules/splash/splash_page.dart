@@ -17,11 +17,13 @@ class SplashPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Center(
-            child: Container(
-              height: 90,
-              child: Icon(Icons.subscriptions, color: Colors.white),
+            child: Icon(
+              Icons.subscriptions,
+              color: Colors.white,
+              size: 30.0,
             ),
           ),
+          SizedBox(height: 10.0),
           Text(
             "Subscription App",
             style: TextStyle(

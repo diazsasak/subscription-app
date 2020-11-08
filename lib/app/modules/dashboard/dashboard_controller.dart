@@ -17,11 +17,17 @@ class DashboardCtrl extends GetxController {
   DashboardCtrl({@required this.feedRepository})
       : assert(feedRepository != null);
 
-  final isSearch = Rx<bool>(false);
+  final _isSearchEnabled = false.obs;
+
+  get isSearchEnabled => _isSearchEnabled.value;
+
+  set isSearchEnabled(val) => _isSearchEnabled.value = val;
 
   final _subscriptionList = RxList<SubscribeResponse>([]);
 
   get subscriptionList => _subscriptionList;
+
+  get numberOfSubscribedFeed => _subscriptionList.length;
 
   set subscriptionList(val) => _subscriptionList.value = val;
 
@@ -66,12 +72,13 @@ class DashboardCtrl extends GetxController {
       page: initial
           ? 1
           : (_feedPaginate.value.feeds.length / _amountPerPage).floor() + 1,
+      limit: _amountPerPage,
       keyword: keyword,
     );
     if (response.status) {
       FeedPaginate fp = syncSubscription(response.data);
-      if (feedPaginate == null || initial) {
-        feedPaginate = fp;
+      if (initial) {
+        _feedPaginate.value = fp;
       } else {
         _feedPaginate.update((val) {
           val.feeds.addAll(fp.feeds);
@@ -110,16 +117,10 @@ class DashboardCtrl extends GetxController {
   }
 
   setSearch() {
-    isSearch.value = !isSearch.value;
-  }
-
-  clearSearch() {
-    isSearch.value = false;
-    getFeedList(initial: true);
-  }
-
-  getSubscribedFeedAmount() {
-    return _subscriptionList.length;
+    _isSearchEnabled.value = !_isSearchEnabled.value;
+    if (!_isSearchEnabled.value) {
+      getFeedList(initial: true);
+    }
   }
 
   filterByFeedName({String feedName}) {

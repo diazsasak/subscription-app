@@ -14,16 +14,14 @@ class FeedApiProvider {
 
   FeedApiProvider({@required this.httpClient});
 
-  final Map<String, String> _headers = {'Content-Type': 'application/json'};
-
   Future<ProviderResponse> getFeedList(
-      {@required int page, String keyword}) async {
+      {@required int page, @required int limit, String keyword}) async {
     try {
-      String url = "$baseUrl/feeds?_page=$page&_limit=10&_sort=id";
+      String url = "$baseUrl/feeds?_page=$page&_limit=$limit&_sort=id";
       if (keyword != null) {
         url += "&feedName_like=$keyword";
       }
-      http.Response r = await httpClient.get(url, headers: _headers);
+      http.Response r = await httpClient.get(url);
       Map<String, dynamic> response = setupResponse(r);
       if (response['status']) {
         return ProviderResponse<FeedPaginate>(
@@ -45,8 +43,7 @@ class FeedApiProvider {
 
   Future<ProviderResponse> subscribeFeed({@required int feedId}) async {
     try {
-      http.Response r = await httpClient.get("$baseUrl/feed/$feedId/subscribe",
-          headers: _headers);
+      http.Response r = await httpClient.get("$baseUrl/feed/$feedId/subscribe");
       Map<String, dynamic> response = setupResponse(r);
       if (response['status']) {
         return ProviderResponse<SubscribeResponse>(
@@ -64,7 +61,7 @@ class FeedApiProvider {
 
   Map<String, dynamic> setupResponse(http.Response response) {
     Map<String, dynamic> responseData = {};
-    print(response.request.url);
+    // print(response.request.url);
     print(response.statusCode);
     // print(response.body);
     if (response.statusCode != 200) {
@@ -77,16 +74,11 @@ class FeedApiProvider {
         responseData['data'] = 'No access.';
       } else if (response.statusCode == 401) {
         responseData['data'] = 'Unauthorized.';
-      } else if (response.statusCode == 422) {
-        responseData = json.decode(response.body);
-        responseData['data'] = responseData['message'];
       }
-      responseData['status'] = false;
     } else {
       responseData['status'] = true;
       responseData['data'] = json.decode(response.body);
     }
-    responseData['status_code'] = response.statusCode;
     return responseData;
   }
 }
