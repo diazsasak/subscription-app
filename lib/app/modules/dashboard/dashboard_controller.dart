@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:connectivity/connectivity.dart';
 import 'package:get/get.dart';
 import 'package:meta/meta.dart';
 import 'package:subscription_app/app/data/models/feed.dart';
@@ -44,10 +45,23 @@ class DashboardCtrl extends GetxController {
 
   Timer _debounce;
 
+  final _isConnected = false.obs;
+
+  bool get isConnected => _isConnected.value;
+
+  set isConnected(val) => _isConnected.value = val;
+
   @override
   void onInit() {
     super.onInit();
-    getFeedList(initial: true);
+    Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+      if (result == ConnectivityResult.none) {
+        _isConnected.value = false;
+      } else {
+        _isConnected.value = true;
+        getFeedList(initial: true);
+      }
+    });
   }
 
   FeedPaginate syncSubscription(FeedPaginate fp) {
@@ -97,8 +111,7 @@ class DashboardCtrl extends GetxController {
       ViewUtils.showSnackbar(
           status: false, message: 'Unsubscribed from ${feed.feedName}');
     } else {
-      var response =
-          await feedRepository.subscribeFeed(feedId: feed.id);
+      var response = await feedRepository.subscribeFeed(feedId: feed.id);
       if (response.status) {
         _feedPaginate.update((val) {
           val.feeds[val.feeds.indexWhere((element) => element.id == feed.id)]
