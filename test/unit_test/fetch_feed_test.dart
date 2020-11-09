@@ -7,7 +7,7 @@ import 'package:subscription_app/app/data/models/feed_paginate.dart';
 import 'package:subscription_app/app/data/models/provider_response.dart';
 import 'package:subscription_app/app/data/providers/feed_api_provider.dart';
 
-main() {
+void main() {
   group('fetchFeed', () {
     test(
         'return ProviderResponse<FeedPaginate> if the http call completes successfully',

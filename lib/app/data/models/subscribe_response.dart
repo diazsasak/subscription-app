@@ -20,12 +20,12 @@ class SubscribeResponse {
 
   factory SubscribeResponse.fromMap(Map<String, dynamic> json) =>
       SubscribeResponse(
-        id: json["id"],
-        feedId: json["feedId"],
+        id: json['id'],
+        feedId: json['feedId'],
       );
 
   Map<String, dynamic> toMap() => {
-        "id": id,
-        "feedId": feedId,
+        'id': id,
+        'feedId': feedId,
       };
 }

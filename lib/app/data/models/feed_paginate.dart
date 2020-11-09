@@ -17,12 +17,12 @@ class FeedPaginate {
   String toJson() => json.encode(toMap());
 
   factory FeedPaginate.fromMap(Map<String, dynamic> json) => FeedPaginate(
-        total: json["total"],
-        feeds: List<Feed>.from(json["feeds"].map((x) => Feed.fromMap(x))),
+        total: json['total'],
+        feeds: List<Feed>.from(json['feeds'].map((x) => Feed.fromMap(x))),
       );
 
   Map<String, dynamic> toMap() => {
-        "total": total,
-        "feeds": List<dynamic>.from(feeds.map((x) => x.toMap())),
+        'total': total,
+        'feeds': List<dynamic>.from(feeds.map((x) => x.toMap())),
       };
 }

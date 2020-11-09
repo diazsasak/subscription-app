@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'package:meta/meta.dart';
 import 'package:subscription_app/app/data/models/feed.dart';
 import 'package:subscription_app/app/data/models/feed_paginate.dart';
-import 'package:subscription_app/app/data/models/provider_response.dart';
 import 'package:subscription_app/app/data/models/subscribe_response.dart';
 import 'package:subscription_app/app/data/repositories/feed_repository.dart';
 import 'package:subscription_app/app/helpers/view_utils.dart';
@@ -19,27 +18,25 @@ class DashboardCtrl extends GetxController {
 
   final _isSearchEnabled = false.obs;
 
-  get isSearchEnabled => _isSearchEnabled.value;
+  bool get isSearchEnabled => _isSearchEnabled.value;
 
   set isSearchEnabled(val) => _isSearchEnabled.value = val;
 
   final _subscriptionList = RxList<SubscribeResponse>([]);
 
-  get subscriptionList => _subscriptionList;
-
-  get numberOfSubscribedFeed => _subscriptionList.length;
+  int get numberOfSubscribedFeed => _subscriptionList.length;
 
   set subscriptionList(val) => _subscriptionList.value = val;
 
   final _isLoading = Rx<bool>(false);
 
-  get isLoading => _isLoading.value;
+  bool get isLoading => _isLoading.value;
 
   set isLoading(val) => _isLoading.value = val;
 
   final _feedPaginate = Rx<FeedPaginate>();
 
-  get feedPaginate => _feedPaginate.value;
+  FeedPaginate get feedPaginate => _feedPaginate.value;
 
   set feedPaginate(val) => _feedPaginate.value = val;
 
@@ -55,7 +52,7 @@ class DashboardCtrl extends GetxController {
 
   FeedPaginate syncSubscription(FeedPaginate fp) {
     _subscriptionList.forEach((e) {
-      int index = fp.feeds.indexWhere((element) => element.id == e.feedId);
+      var index = fp.feeds.indexWhere((element) => element.id == e.feedId);
       if (index >= 0) {
         fp.feeds[index].subscriptionId = e.id;
       }
@@ -63,12 +60,12 @@ class DashboardCtrl extends GetxController {
     return fp;
   }
 
-  getFeedList({@required bool initial, String keyword}) async {
+  Future<void> getFeedList({@required bool initial, String keyword}) async {
     if (isLoading) {
       return;
     }
     isLoading = true;
-    ProviderResponse response = await feedRepository.getFeedList(
+    var response = await feedRepository.getFeedList(
       page: initial
           ? 1
           : (_feedPaginate.value.feeds.length / _amountPerPage).floor() + 1,
@@ -76,7 +73,7 @@ class DashboardCtrl extends GetxController {
       keyword: keyword,
     );
     if (response.status) {
-      FeedPaginate fp = syncSubscription(response.data);
+      var fp = syncSubscription(response.data);
       if (initial) {
         _feedPaginate.value = fp;
       } else {
@@ -90,7 +87,7 @@ class DashboardCtrl extends GetxController {
     isLoading = false;
   }
 
-  toggleSubscribe({@required Feed feed}) async {
+  void toggleSubscribe({@required Feed feed}) async {
     if (feed.subscriptionId != null) {
       _feedPaginate.update((val) {
         val.feeds[val.feeds.indexWhere((element) => element.id == feed.id)]
@@ -100,7 +97,7 @@ class DashboardCtrl extends GetxController {
       ViewUtils.showSnackbar(
           status: false, message: 'Unsubscribed from ${feed.feedName}');
     } else {
-      ProviderResponse response =
+      var response =
           await feedRepository.subscribeFeed(feedId: feed.id);
       if (response.status) {
         _feedPaginate.update((val) {
@@ -116,14 +113,14 @@ class DashboardCtrl extends GetxController {
     }
   }
 
-  setSearch() {
+  void setSearch() {
     _isSearchEnabled.value = !_isSearchEnabled.value;
     if (!_isSearchEnabled.value) {
       getFeedList(initial: true);
     }
   }
 
-  filterByFeedName({String feedName}) {
+  void filterByFeedName({String feedName}) {
     if (_debounce?.isActive ?? false) _debounce.cancel();
     _debounce = Timer(const Duration(milliseconds: 500), () {
       getFeedList(initial: true, keyword: feedName);

@@ -2,9 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
-import 'package:http/testing.dart';
 import 'package:mockito/mockito.dart';
-import 'package:subscription_app/app/data/models/feed.dart';
 import 'package:subscription_app/app/data/providers/feed_api_provider.dart';
 import 'package:subscription_app/app/data/repositories/feed_repository.dart';
 import 'package:subscription_app/app/modules/dashboard/dashboard_controller.dart';
@@ -45,7 +43,7 @@ void main() {
           .thenAnswer((_) async => http.Response(json.encode(mapJson), 200,
               headers: {'x-total-count': '21'}));
       expect(ctrl.feedPaginate, isNull);
-      ctrl.getFeedList(initial: true);
+      await ctrl.getFeedList(initial: true);
       await Future.delayed(Duration(milliseconds: 500));
       expect(ctrl.feedPaginate, isNotNull);
     });
@@ -61,10 +59,10 @@ void main() {
           .thenAnswer((_) async => http.Response(
               json.encode(feedsResponse), 200,
               headers: {'x-total-count': '21'}));
-      ctrl.getFeedList(initial: true);
+      await ctrl.getFeedList(initial: true);
       await Future.delayed(Duration(milliseconds: 500));
       expect(ctrl.numberOfSubscribedFeed, 0);
-      final subscribeResponse = {"id": "subsId1", "feedId": 1};
+      final subscribeResponse = {'id': 'subsId1', 'feedId': 1};
       when(client.get('$SERVER_ADDRESS/api/v1/feed/1/subscribe')).thenAnswer(
           (_) async => http.Response(json.encode(subscribeResponse), 200));
       ctrl.toggleSubscribe(feed: ctrl.feedPaginate.feeds[0]);
@@ -83,10 +81,9 @@ void main() {
     when(client.get('$SERVER_ADDRESS/api/v1/feeds?_page=1&_limit=10&_sort=id'))
         .thenAnswer((_) async => http.Response(json.encode(feedsResponse), 200,
             headers: {'x-total-count': '21'}));
-    ctrl.getFeedList(initial: true);
-    await Future.delayed(Duration(milliseconds: 500));
+    await ctrl.getFeedList(initial: true);
     expect(ctrl.numberOfSubscribedFeed, 0);
-    final subscribeResponse = {"id": "subsId1", "feedId": 1};
+    final subscribeResponse = {'id': 'subsId1', 'feedId': 1};
     when(client.get('$SERVER_ADDRESS/api/v1/feed/1/subscribe')).thenAnswer(
         (_) async => http.Response(json.encode(subscribeResponse), 200));
     ctrl.toggleSubscribe(feed: ctrl.feedPaginate.feeds[0]);
@@ -107,16 +104,16 @@ void main() {
     when(client.get('$SERVER_ADDRESS/api/v1/feeds?_page=1&_limit=10&_sort=id'))
         .thenAnswer((_) async => http.Response(json.encode(feedsResponse), 200,
             headers: {'x-total-count': '21'}));
-    ctrl.getFeedList(initial: true);
+    await ctrl.getFeedList(initial: true);
     await Future.delayed(Duration(milliseconds: 500));
     expect(ctrl.numberOfSubscribedFeed, 0);
-    final subscribeResponse = {"id": "subsId1", "feedId": 1};
+    final subscribeResponse = {'id': 'subsId1', 'feedId': 1};
     when(client.get('$SERVER_ADDRESS/api/v1/feed/1/subscribe')).thenAnswer(
         (_) async => http.Response(json.encode(subscribeResponse), 200));
     ctrl.toggleSubscribe(feed: ctrl.feedPaginate.feeds[0]);
     await Future.delayed(Duration(milliseconds: 500));
     expect(ctrl.numberOfSubscribedFeed, 1);
-    Feed oldState = ctrl.feedPaginate.feeds.firstWhere((f) => f.id == 1);
+    var oldState = ctrl.feedPaginate.feeds.firstWhere((f) => f.id == 1);
     expect(
         ctrl
             .feedPaginate
@@ -125,7 +122,7 @@ void main() {
             .subscriptionId,
         isNotNull);
     ctrl.filterByFeedName(feedName: 'Feed 1');
-    Feed newState = ctrl.feedPaginate.feeds.firstWhere((f) => f.id == 1);
+    var newState = ctrl.feedPaginate.feeds.firstWhere((f) => f.id == 1);
     expect(
         ctrl
             .feedPaginate

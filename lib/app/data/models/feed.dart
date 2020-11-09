@@ -16,14 +16,14 @@ class Feed {
   String toJson() => json.encode(toMap());
 
   factory Feed.fromMap(Map<String, dynamic> json) => Feed(
-        id: json["id"],
-        feedName: json["feedName"],
-        subscriptionId: json["subscriptionId"],
+        id: json['id'],
+        feedName: json['feedName'],
+        subscriptionId: json['subscriptionId'],
       );
 
   Map<String, dynamic> toMap() => {
-        "id": id,
-        "feedName": feedName,
-        "subscriptionId": subscriptionId,
+        'id': id,
+        'feedName': feedName,
+        'subscriptionId': subscriptionId,
       };
 }

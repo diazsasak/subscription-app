@@ -15,22 +15,22 @@ class DashboardPage extends StatelessWidget {
               ? TextField(
                   key: Key('text_field'),
                   autofocus: true,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: 'Search by feed name',
                     border: InputBorder.none,
                     floatingLabelBehavior: FloatingLabelBehavior.never,
                     hintStyle: TextStyle(color: Colors.white),
                   ),
                   onChanged: (String v) => ctrl.filterByFeedName(feedName: v),
-                  style: TextStyle(color: Colors.white),
+                  style: const TextStyle(color: Colors.white),
                   cursorColor: Colors.white,
                 )
-              : Text('Dashboard'),
+              : const Text('Dashboard'),
         ),
         actions: [
           IconButton(
             icon: Obx(() =>
-                ctrl.isSearchEnabled ? Icon(Icons.clear) : Icon(Icons.search)),
+                ctrl.isSearchEnabled ? const Icon(Icons.clear) : const Icon(Icons.search)),
             onPressed: ctrl.setSearch,
             key: Key('search_button'),
           )
@@ -38,13 +38,13 @@ class DashboardPage extends StatelessWidget {
       ),
       body: Obx(
         () => ctrl.isLoading && ctrl.feedPaginate == null
-            ? Center(
+            ? const Center(
                 child: CircularProgressIndicator(),
               )
             : ctrl.feedPaginate == null
                 ? Center(
                     child: FlatButton(
-                      child: Text(
+                      child: const Text(
                         'Get Feeds',
                         style: TextStyle(color: Colors.white),
                       ),
@@ -71,21 +71,21 @@ class DashboardPage extends StatelessWidget {
                           children: [
                             Card(
                               child: Container(
-                                padding: EdgeInsets.all(8.0),
+                                padding: const EdgeInsets.all(8.0),
                                 child: Column(
                                   children: [
-                                    Text('Number of Subscribed Feed'),
+                                    const Text('Number of Subscribed Feed'),
                                     Text(
-                                      "${ctrl.numberOfSubscribedFeed}",
-                                      style: TextStyle(fontSize: 30.0),
+                                      '${ctrl.numberOfSubscribedFeed}',
+                                      style: const TextStyle(fontSize: 30.0),
                                     )
                                   ],
                                 ),
                               ),
                             ),
                             Expanded(
-                              child: ctrl.feedPaginate.feeds.length == 0
-                                  ? Center(
+                              child: ctrl.feedPaginate.feeds.isEmpty
+                                  ? const Center(
                                       child: Text('Empty.'),
                                     )
                                   : ListView.builder(

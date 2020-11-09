@@ -25,7 +25,7 @@ class SplashPage extends StatelessWidget {
           ),
           SizedBox(height: 10.0),
           Text(
-            "Subscription App",
+            'Subscription App',
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 25,

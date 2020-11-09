@@ -12,12 +12,12 @@ class FeedListItem extends StatelessWidget {
     return Container(
       child: Card(
         child: Container(
-          padding: EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(8.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              FlutterLogo(size: 30),
-              SizedBox(width: 10),
+              const FlutterLogo(size: 30),
+              const SizedBox(width: 10),
               Expanded(
                   child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -25,20 +25,20 @@ class FeedListItem extends StatelessWidget {
                   Text(feed.feedName),
                   if (feed.subscriptionId != null)
                     Text(
-                      "Subscription ID: ${feed.subscriptionId}",
-                      style: TextStyle(fontSize: 10.0),
+                      'Subscription ID: ${feed.subscriptionId}',
+                      style: const TextStyle(fontSize: 10.0),
                     ),
                 ],
               )),
               InkWell(
                 onTap: onPressed,
                 child: feed.subscriptionId == null
-                    ? Text(
+                    ? const Text(
                         'SUBSCRIBE',
                         style: TextStyle(
                             fontWeight: FontWeight.bold, color: Colors.red),
                       )
-                    : Text(
+                    : const Text(
                         'UNSUBSCRIBE',
                         style: TextStyle(
                             fontWeight: FontWeight.bold, color: Colors.grey),

@@ -6,6 +6,6 @@ class ProviderResponse<T> {
 
   ProviderResponse({@required this.status, @required this.data});
 
-  static get generalError => ProviderResponse<String>(
+  static ProviderResponse<String> get generalError => ProviderResponse<String>(
       status: false, data: 'Something went wrong, please try again');
 }
