@@ -25,4 +25,9 @@ class FeedPaginate {
         'total': total,
         'feeds': List<dynamic>.from(feeds.map((x) => x.toMap())),
       };
+
+  // if there are remaining feed not loaded, we add 1 space for the loading progress at the bottom of list view
+  int get itemCount => total > feeds.length ? feeds.length + 1 : feeds.length;
+
+  bool shouldShowLoadMoreProgress(int index) => total > feeds.length && index == feeds.length;
 }

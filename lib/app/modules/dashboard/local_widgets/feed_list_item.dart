@@ -3,9 +3,9 @@ import 'package:subscription_app/app/data/models/feed.dart';
 
 class FeedListItem extends StatelessWidget {
   final Feed feed;
-  final Function onPressed;
+  final Function onSubscribedPressed;
 
-  FeedListItem({this.feed, this.onPressed});
+  FeedListItem({this.feed, this.onSubscribedPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -31,15 +31,17 @@ class FeedListItem extends StatelessWidget {
                 ],
               )),
               InkWell(
-                onTap: onPressed,
+                onTap: onSubscribedPressed,
                 child: feed.subscriptionId == null
-                    ? const Text(
+                    ? Text(
                         'SUBSCRIBE',
+                        key: Key('subscribe_button_${feed.id}'),
                         style: TextStyle(
                             fontWeight: FontWeight.bold, color: Colors.red),
                       )
-                    : const Text(
+                    : Text(
                         'UNSUBSCRIBE',
+                        key: Key('unsubscribe_button_${feed.id}'),
                         style: TextStyle(
                             fontWeight: FontWeight.bold, color: Colors.grey),
                       ),

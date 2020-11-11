@@ -1,19 +1,22 @@
 import 'dart:convert';
+
 import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
 import 'package:subscription_app/app/data/models/feed.dart';
 import 'package:subscription_app/app/data/models/feed_paginate.dart';
 import 'package:subscription_app/app/data/models/provider_response.dart';
 import 'package:subscription_app/app/data/models/subscribe_response.dart';
+import 'package:subscription_app/app/domain/providers/ifeed_provider.dart';
 import 'package:subscription_app/app/settings/server_address.dart';
 
 const baseUrl = '$SERVER_ADDRESS/api/v1';
 
-class FeedApiProvider {
+class FeedApiProvider implements IFeedProvider {
   final http.Client httpClient;
 
-  FeedApiProvider({@required this.httpClient});
+  FeedApiProvider({@required this.httpClient}) : assert(httpClient != null);
 
+  @override
   Future<ProviderResponse> getFeedList(
       {@required int page, @required int limit, String keyword}) async {
     try {
@@ -22,7 +25,7 @@ class FeedApiProvider {
         url += '&feedName_like=$keyword';
       }
       var r = await httpClient.get(url);
-      var response = setupResponse(r);
+      var response = _setupResponse(r);
       if (response['status']) {
         return ProviderResponse<FeedPaginate>(
           status: true,
@@ -41,10 +44,11 @@ class FeedApiProvider {
     }
   }
 
+  @override
   Future<ProviderResponse> subscribeFeed({@required int feedId}) async {
     try {
       var r = await httpClient.get('$baseUrl/feed/$feedId/subscribe');
-      var response = setupResponse(r);
+      var response = _setupResponse(r);
       if (response['status']) {
         return ProviderResponse<SubscribeResponse>(
           status: true,
@@ -59,7 +63,7 @@ class FeedApiProvider {
     }
   }
 
-  Map<String, dynamic> setupResponse(http.Response response) {
+  Map<String, dynamic> _setupResponse(http.Response response) {
     var responseData = <String, dynamic>{};
     // print(response.request.url);
     print(response.statusCode);

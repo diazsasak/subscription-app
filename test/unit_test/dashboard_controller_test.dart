@@ -8,7 +8,7 @@ import 'package:subscription_app/app/data/repositories/feed_repository.dart';
 import 'package:subscription_app/app/modules/dashboard/dashboard_controller.dart';
 import 'package:subscription_app/app/settings/server_address.dart';
 
-class MockClient extends Mock implements http.Client {}
+import 'mock_client.dart';
 
 void main() {
   MockClient client;
@@ -20,7 +20,7 @@ void main() {
             FeedRepository(apiClient: FeedApiProvider(httpClient: client)));
   });
 
-  group('DashboardCtrl', () {
+  group('Dashboard Controller Test', () {
     test('search should be hidden at the first time', () {
       expect(ctrl.isSearchEnabled, isFalse);
     });
@@ -46,6 +46,8 @@ void main() {
       await ctrl.getFeedList(initial: true);
       await Future.delayed(Duration(milliseconds: 500));
       expect(ctrl.feedPaginate, isNotNull);
+      expect(ctrl.feedPaginate.total, isNotNull);
+      expect(ctrl.feedPaginate.feeds, isNotNull);
     });
 
     test(
@@ -68,68 +70,37 @@ void main() {
       ctrl.toggleSubscribe(feed: ctrl.feedPaginate.feeds[0]);
       await Future.delayed(Duration(milliseconds: 500));
       expect(ctrl.numberOfSubscribedFeed, 1);
+      expect(ctrl.feedPaginate.feeds[0], isNotNull);
       expect(ctrl.feedPaginate.feeds[0].subscriptionId, isNotNull);
+      expect(ctrl.feedPaginate.feeds[0].id, isNotNull);
+      expect(ctrl.feedPaginate.feeds[0].feedName, isNotNull);
     });
-  });
 
-  test(
-      'numberOfSubscribedFeed should be decreased and subscriptionId should be null when unsubscribe a feed',
-      () async {
-    final feedsResponse = [
-      {'id': 1, 'feedName': 'Feed 1'}
-    ];
-    when(client.get('$SERVER_ADDRESS/api/v1/feeds?_page=1&_limit=10&_sort=id'))
-        .thenAnswer((_) async => http.Response(json.encode(feedsResponse), 200,
-            headers: {'x-total-count': '21'}));
-    await ctrl.getFeedList(initial: true);
-    expect(ctrl.numberOfSubscribedFeed, 0);
-    final subscribeResponse = {'id': 'subsId1', 'feedId': 1};
-    when(client.get('$SERVER_ADDRESS/api/v1/feed/1/subscribe')).thenAnswer(
-        (_) async => http.Response(json.encode(subscribeResponse), 200));
-    ctrl.toggleSubscribe(feed: ctrl.feedPaginate.feeds[0]);
-    await Future.delayed(Duration(milliseconds: 500));
-    expect(ctrl.numberOfSubscribedFeed, 1);
-    ctrl.toggleSubscribe(feed: ctrl.feedPaginate.feeds[0]);
-    expect(ctrl.numberOfSubscribedFeed, 0);
-    expect(ctrl.feedPaginate.feeds[0].subscriptionId, isNull);
-  });
-
-  test('Subscription state should be synced after feed list is updated',
-      () async {
-    final feedsResponse = [
-      {'id': 1, 'feedName': 'Feed 1'},
-      {'id': 2, 'feedName': 'Feed 2'},
-      {'id': 11, 'feedName': 'Feed 11'},
-    ];
-    when(client.get('$SERVER_ADDRESS/api/v1/feeds?_page=1&_limit=10&_sort=id'))
-        .thenAnswer((_) async => http.Response(json.encode(feedsResponse), 200,
-            headers: {'x-total-count': '21'}));
-    await ctrl.getFeedList(initial: true);
-    await Future.delayed(Duration(milliseconds: 500));
-    expect(ctrl.numberOfSubscribedFeed, 0);
-    final subscribeResponse = {'id': 'subsId1', 'feedId': 1};
-    when(client.get('$SERVER_ADDRESS/api/v1/feed/1/subscribe')).thenAnswer(
-        (_) async => http.Response(json.encode(subscribeResponse), 200));
-    ctrl.toggleSubscribe(feed: ctrl.feedPaginate.feeds[0]);
-    await Future.delayed(Duration(milliseconds: 500));
-    expect(ctrl.numberOfSubscribedFeed, 1);
-    var oldState = ctrl.feedPaginate.feeds.firstWhere((f) => f.id == 1);
-    expect(
-        ctrl
-            .feedPaginate
-            .feeds[
-                ctrl.feedPaginate.feeds.indexWhere((f) => f.id == oldState.id)]
-            .subscriptionId,
-        isNotNull);
-    ctrl.filterByFeedName(feedName: 'Feed 1');
-    var newState = ctrl.feedPaginate.feeds.firstWhere((f) => f.id == 1);
-    expect(
-        ctrl
-            .feedPaginate
-            .feeds[
-                ctrl.feedPaginate.feeds.indexWhere((f) => f.id == newState.id)]
-            .subscriptionId,
-        isNotNull);
-    expect(ctrl.numberOfSubscribedFeed, 1);
+    test(
+        'numberOfSubscribedFeed should be decreased and subscriptionId should be null when unsubscribe a feed',
+        () async {
+      final feedsResponse = [
+        {'id': 1, 'feedName': 'Feed 1'}
+      ];
+      when(client
+              .get('$SERVER_ADDRESS/api/v1/feeds?_page=1&_limit=10&_sort=id'))
+          .thenAnswer((_) async => http.Response(
+              json.encode(feedsResponse), 200,
+              headers: {'x-total-count': '21'}));
+      await ctrl.getFeedList(initial: true);
+      expect(ctrl.numberOfSubscribedFeed, 0);
+      final subscribeResponse = {'id': 'subsId1', 'feedId': 1};
+      when(client.get('$SERVER_ADDRESS/api/v1/feed/1/subscribe')).thenAnswer(
+          (_) async => http.Response(json.encode(subscribeResponse), 200));
+      ctrl.toggleSubscribe(feed: ctrl.feedPaginate.feeds[0]);
+      await Future.delayed(Duration(milliseconds: 500));
+      expect(ctrl.numberOfSubscribedFeed, 1);
+      ctrl.toggleSubscribe(feed: ctrl.feedPaginate.feeds[0]);
+      expect(ctrl.numberOfSubscribedFeed, 0);
+      expect(ctrl.feedPaginate.feeds[0], isNotNull);
+      expect(ctrl.feedPaginate.feeds[0].subscriptionId, isNull);
+      expect(ctrl.feedPaginate.feeds[0].id, isNotNull);
+      expect(ctrl.feedPaginate.feeds[0].feedName, isNotNull);
+    });
   });
 }

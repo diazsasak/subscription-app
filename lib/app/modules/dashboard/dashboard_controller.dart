@@ -7,15 +7,25 @@ import 'package:subscription_app/app/data/models/feed.dart';
 import 'package:subscription_app/app/data/models/feed_paginate.dart';
 import 'package:subscription_app/app/data/models/subscribe_response.dart';
 import 'package:subscription_app/app/data/repositories/feed_repository.dart';
-import 'package:subscription_app/app/helpers/view_utils.dart';
+import 'package:subscription_app/app/helpers/view_helpers.dart';
 
 class DashboardCtrl extends GetxController {
   static DashboardCtrl get to => Get.find();
 
   final FeedRepository feedRepository;
 
-  DashboardCtrl({@required this.feedRepository})
-      : assert(feedRepository != null);
+  DashboardCtrl({@required this.feedRepository, Connectivity connectivity})
+      : assert(feedRepository != null) {
+    connectivity ??= Connectivity();
+    connectivity.onConnectivityChanged.listen((ConnectivityResult result) {
+      if (result == ConnectivityResult.none) {
+        _isConnected.value = false;
+      } else {
+        _isConnected.value = true;
+        getFeedList(initial: true);
+      }
+    });
+  }
 
   final _isSearchEnabled = false.obs;
 
@@ -51,19 +61,6 @@ class DashboardCtrl extends GetxController {
 
   set isConnected(val) => _isConnected.value = val;
 
-  @override
-  void onInit() {
-    super.onInit();
-    Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
-      if (result == ConnectivityResult.none) {
-        _isConnected.value = false;
-      } else {
-        _isConnected.value = true;
-        getFeedList(initial: true);
-      }
-    });
-  }
-
   FeedPaginate syncSubscription(FeedPaginate fp) {
     _subscriptionList.forEach((e) {
       var index = fp.feeds.indexWhere((element) => element.id == e.feedId);
@@ -96,7 +93,7 @@ class DashboardCtrl extends GetxController {
         });
       }
     } else {
-      ViewUtils.showSnackbar(status: response.status, message: response.data);
+      ViewHelpers.showSnackbar(status: response.status, message: response.data);
     }
     isLoading = false;
   }
@@ -108,7 +105,7 @@ class DashboardCtrl extends GetxController {
             .subscriptionId = null;
       });
       _subscriptionList.removeWhere((e) => e.feedId == feed.id);
-      ViewUtils.showSnackbar(
+      ViewHelpers.showSnackbar(
           status: false, message: 'Unsubscribed from ${feed.feedName}');
     } else {
       var response = await feedRepository.subscribeFeed(feedId: feed.id);
@@ -118,10 +115,11 @@ class DashboardCtrl extends GetxController {
               .subscriptionId = (response.data as SubscribeResponse).id;
         });
         _subscriptionList.add(response.data);
-        ViewUtils.showSnackbar(
+        ViewHelpers.showSnackbar(
             status: response.status, message: 'Subscribed to ${feed.feedName}');
       } else {
-        ViewUtils.showSnackbar(status: response.status, message: response.data);
+        ViewHelpers.showSnackbar(
+            status: response.status, message: response.data);
       }
     }
   }

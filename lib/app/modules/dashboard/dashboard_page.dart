@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:subscription_app/app/modules/dashboard/dashboard_controller.dart';
 import 'package:subscription_app/app/modules/dashboard/local_widgets/feed_list_item.dart';
+import 'package:subscription_app/constants.dart';
 
 class DashboardPage extends StatelessWidget {
   final ctrl = DashboardCtrl.to;
@@ -13,7 +14,7 @@ class DashboardPage extends StatelessWidget {
         title: Obx(
           () => ctrl.isSearchEnabled
               ? TextField(
-                  key: Key('text_field'),
+                  key: Key(FILTER_TEXTFIELD_KEY),
                   autofocus: true,
                   decoration: const InputDecoration(
                     hintText: 'Search by feed name',
@@ -33,7 +34,7 @@ class DashboardPage extends StatelessWidget {
                 ? const Icon(Icons.clear)
                 : const Icon(Icons.search)),
             onPressed: ctrl.setSearch,
-            key: Key('search_button'),
+            key: Key(SEARCH_BUTTON_KEY),
           )
         ],
       ),
@@ -90,11 +91,15 @@ class DashboardPage extends StatelessWidget {
                                     padding: const EdgeInsets.all(8.0),
                                     child: Column(
                                       children: [
-                                        const Text('Number of Subscribed Feed'),
+                                        const Text(
+                                          'Number of Subscribed Feed',
+                                        ),
                                         Text(
                                           '${ctrl.numberOfSubscribedFeed}',
                                           style:
                                               const TextStyle(fontSize: 30.0),
+                                          key: Key(
+                                              NUMBER_OF_SUBSCRIBED_FEED_KEY),
                                         )
                                       ],
                                     ),
@@ -106,18 +111,13 @@ class DashboardPage extends StatelessWidget {
                                           child: Text('Empty.'),
                                         )
                                       : ListView.builder(
-                                          itemCount: ctrl.feedPaginate.total >
-                                                  ctrl.feedPaginate.feeds.length
-                                              ? ctrl.feedPaginate.feeds.length +
-                                                  1
-                                              : ctrl.feedPaginate.feeds.length,
+                                          key: Key(FEED_LIST_KEY),
+                                          itemCount:
+                                              ctrl.feedPaginate.itemCount,
                                           itemBuilder: (context, index) {
-                                            if (ctrl.feedPaginate.total >
-                                                    ctrl.feedPaginate.feeds
-                                                        .length &&
-                                                index ==
-                                                    ctrl.feedPaginate.feeds
-                                                        .length) {
+                                            if (ctrl.feedPaginate
+                                                .shouldShowLoadMoreProgress(
+                                                    index)) {
                                               return Center(
                                                   child:
                                                       CircularProgressIndicator());
@@ -125,7 +125,7 @@ class DashboardPage extends StatelessWidget {
                                             return FeedListItem(
                                               feed: ctrl
                                                   .feedPaginate.feeds[index],
-                                              onPressed: () =>
+                                              onSubscribedPressed: () =>
                                                   ctrl.toggleSubscribe(
                                                 feed: ctrl
                                                     .feedPaginate.feeds[index],

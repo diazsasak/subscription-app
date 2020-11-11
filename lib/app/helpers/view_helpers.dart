@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class ViewUtils {
+class ViewHelpers {
   static void showSnackbar({bool status, String message}) {
     Get.snackbar(
       null,

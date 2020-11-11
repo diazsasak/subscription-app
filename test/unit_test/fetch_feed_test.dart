@@ -21,9 +21,9 @@ void main() {
       });
 
       final provider = FeedApiProvider(httpClient: client);
-
-      expect(await provider.getFeedList(page: 1, limit: 10),
-          isA<ProviderResponse<FeedPaginate>>());
+      var response = await provider.getFeedList(page: 1, limit: 10);
+      expect(response, isA<ProviderResponse<FeedPaginate>>());
+      expect(response.status, isTrue);
     });
 
     test(
@@ -34,9 +34,9 @@ void main() {
       });
 
       final provider = FeedApiProvider(httpClient: client);
-
-      expect(await provider.getFeedList(page: 1, limit: 10),
-          isA<ProviderResponse<String>>());
+      var response = await provider.getFeedList(page: 1, limit: 10);
+      expect(response, isA<ProviderResponse<String>>());
+      expect(response.status, false);
     });
   });
 }
